@@ -80,17 +80,27 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
 		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
+		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
+		//这里是使用xml文件进行配置的，所以这里使用的是XmlBeanDefinitionReader作为beanDefinitionReader，
+		//这里beanFactory作为BeanDefinitionRegistry实例传入beanDefinitionReader.XmlBeanDefinitionReader.XmlBeanDefinitionReader(BeanDefinitionRegistry registry);
+		//注意beanDefinitionReader中的registry
+		//提醒:还记得文章开始部分定义的BeanDefinition是什么吗？bean的所有信息在该对象中进行封装，包括bean的参数值、方法名、是否懒加载、是否为单例等各种信息
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
 		// Configure the bean definition reader with this context's
 		// resource loading environment.
 		beanDefinitionReader.setEnvironment(this.getEnvironment());
+		//注意这个ResourceLoader参数，此处的this指的是AbstractXmlApplicationContext，而AbstractBeanDefinitionReader.setResourceLoader(ResourceLoader resourceLoader)中接收的是ResourceLoader
+		//所以说AbstractXmlApplicationContext实现了ResourceLoader接口（上面已经说过）
 		beanDefinitionReader.setResourceLoader(this);
+		//设置实体解析器，该ResourceEntityResolver还是用ResourceLoader接收的this
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
+		//对defintionReader进行初始化操作，运训子类进行覆盖，然后开始进行实际加载bean definition
 		initBeanDefinitionReader(beanDefinitionReader);
+		//重点！！！进行BeanDefinitions的加载操作
 		loadBeanDefinitions(beanDefinitionReader);
 	}
 
@@ -119,12 +129,18 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #getResourcePatternResolver
 	 */
 	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
+		//    这里进入关键方法loadBeanDefinitions，该方法实现于：void org.springframework.context.support.AbstractXmlApplicationContext
+		// .loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException
+		//取得ClassPathResource并进行加载
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
+			//标识位置：loadBeanDefinitions_Resource
 			reader.loadBeanDefinitions(configResources);
 		}
+		//取得ConfigLocations并进行加载（这里的ConfigLocations就是上面解析出来的String[] configLocations,存储着配置文件的路径）
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
+			//标识位置：loadBeanDefinitions_String
 			reader.loadBeanDefinitions(configLocations);
 		}
 	}

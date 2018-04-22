@@ -184,6 +184,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 		Assert.notNull(resources, "Resource array must not be null");
 		int counter = 0;
 		for (Resource resource : resources) {
+			//循环对locations进行加载
 			counter += loadBeanDefinitions(resource);
 		}
 		return counter;
@@ -210,12 +211,13 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 	 * @see #loadBeanDefinitions(org.springframework.core.io.Resource[])
 	 */
 	public int loadBeanDefinitions(String location, @Nullable Set<Resource> actualResources) throws BeanDefinitionStoreException {
+		//还记得这个resourceLoader什么时候赋值的吗？赋值的又是谁呢？AbstractXmlApplicationContext
 		ResourceLoader resourceLoader = getResourceLoader();
 		if (resourceLoader == null) {
 			throw new BeanDefinitionStoreException(
 					"Cannot import bean definitions from location [" + location + "]: no ResourceLoader available");
 		}
-
+		//这里根据resourceLoader进行划分，不同的resourceLoader从不同的源加载resource。
 		if (resourceLoader instanceof ResourcePatternResolver) {
 			// Resource pattern matching available.
 			try {
@@ -223,6 +225,7 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 				int loadCount = loadBeanDefinitions(resources);
 				if (actualResources != null) {
 					for (Resource resource : resources) {
+						//把resource进行缓存
 						actualResources.add(resource);
 					}
 				}
@@ -238,9 +241,13 @@ public abstract class AbstractBeanDefinitionReader implements EnvironmentCapable
 		}
 		else {
 			// Can only load single resources by absolute URL.
+			// Can only load single resources by absolute URL.
+			//只能加载从绝对URL加载单例资源，xml走的是这里,进入之后区分类路径资源、URL资源和文件系统资源（xml属于该种），这里不再对封装resource进行分析
 			Resource resource = resourceLoader.getResource(location);
+			//进行记载definition，这里调用的方法和标识位置：loadBeanDefinitions_Resource调用的加载方法就相同了
 			int loadCount = loadBeanDefinitions(resource);
 			if (actualResources != null) {
+				//把resource进行缓存
 				actualResources.add(resource);
 			}
 			if (logger.isDebugEnabled()) {

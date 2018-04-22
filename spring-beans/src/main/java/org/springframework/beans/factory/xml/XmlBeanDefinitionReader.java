@@ -319,19 +319,25 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 		if (currentResources == null) {
 			currentResources = new HashSet<>(4);
+			//操作之前先把currentResources放在resourcesCurrentlyBeingLoaded中，注意下面加载操作完成之后进行了remove
 			this.resourcesCurrentlyBeingLoaded.set(currentResources);
 		}
+		//这里把encodedResource放进currentResources中，后面依旧会remove
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException(
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
 		try {
+			//获取inputStream
 			InputStream inputStream = encodedResource.getResource().getInputStream();
 			try {
+				//封装为InputSource
 				InputSource inputSource = new InputSource(inputStream);
 				if (encodedResource.getEncoding() != null) {
+					//为inputSource设置resource的编码方式
 					inputSource.setEncoding(encodedResource.getEncoding());
 				}
+				//这里才是真正进行BeanDefinitions的加载操作，前面的都是进行预处理封装inputSource
 				return doLoadBeanDefinitions(inputSource, encodedResource.getResource());
 			}
 			finally {
@@ -343,6 +349,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 					"IOException parsing XML document from " + encodedResource.getResource(), ex);
 		}
 		finally {
+			//操作之后把currentResources从resourcesCurrentlyBeingLoaded中移除出去，注意上面加载操之前的add
 			currentResources.remove(encodedResource);
 			if (currentResources.isEmpty()) {
 				this.resourcesCurrentlyBeingLoaded.remove();
@@ -384,10 +391,12 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see #doLoadDocument
 	 * @see #registerBeanDefinitions
 	 */
-	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
-			throws BeanDefinitionStoreException {
+	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource) throws BeanDefinitionStoreException {
 		try {
+			//关键方法两步：取得Document;注册BeanDefinition
+			//这里就不再解析怎么加载Document的了，Spring是使用SAX进行xml解析的，可以自己详细了解
 			Document doc = doLoadDocument(inputSource, resource);
+			//把BeanDefinition注册到context中
 			return registerBeanDefinitions(doc, resource);
 		}
 		catch (BeanDefinitionStoreException ex) {
@@ -502,8 +511,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		//创建documentReader这里返回的是    return BeanDefinitionDocumentReader.class.cast(BeanUtils.instantiateClass(this.documentReaderClass));
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
+		//这个countBefore是为了统计从Document中加载的beanDefinition的个数
 		int countBefore = getRegistry().getBeanDefinitionCount();
+		//进行注册BeanDefinition操作
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}
