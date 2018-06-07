@@ -16,9 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Annotation;
-import java.util.function.Supplier;
-
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
@@ -32,6 +29,9 @@ import org.springframework.core.env.EnvironmentCapable;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.annotation.Annotation;
+import java.util.function.Supplier;
 
 /**
  * Convenient adapter for programmatic registration of annotated bean classes.
@@ -129,6 +129,7 @@ public class AnnotatedBeanDefinitionReader {
 	 * annotated class more than once has no additional effect.
 	 * @param annotatedClasses one or more annotated classes,
 	 * e.g. {@link Configuration @Configuration} classes
+	 *   注册到beanfactory
 	 */
 	public void register(Class<?>... annotatedClasses) {
 		for (Class<?> annotatedClass : annotatedClasses) {
@@ -219,10 +220,12 @@ public class AnnotatedBeanDefinitionReader {
 		}
 
 		abd.setInstanceSupplier(instanceSupplier);
+		//处理scope
 		ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(abd);
 		abd.setScope(scopeMetadata.getScopeName());
+		//类名
 		String beanName = (name != null ? name : this.beanNameGenerator.generateBeanName(abd, this.registry));
-
+		//处理类的属性注解
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(abd);
 		if (qualifiers != null) {
 			for (Class<? extends Annotation> qualifier : qualifiers) {
@@ -243,6 +246,7 @@ public class AnnotatedBeanDefinitionReader {
 
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		//注册到beanfactory
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 

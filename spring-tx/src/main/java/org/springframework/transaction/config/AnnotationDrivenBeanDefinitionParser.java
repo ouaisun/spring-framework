@@ -66,13 +66,14 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 			registerTransactionAspect(element, parserContext);
 		} else {
 			// mode="proxy"
+			//这里一般我们都是用代理处理事务,重要
 			AopAutoProxyConfigurer.configureAutoProxyCreator(element, parserContext);
 		}
 		return null;
 	}
 
 	private void registerTransactionAspect(Element element, ParserContext parserContext) {
-		String txAspectBeanName = TransactionManagementConfigUtils.TRANSACTION_ASPECT_BEAN_NAME;
+		String txAspectBeanName  = TransactionManagementConfigUtils.TRANSACTION_ASPECT_BEAN_NAME;
 		String txAspectClassName = TransactionManagementConfigUtils.TRANSACTION_ASPECT_CLASS_NAME;
 		if (!parserContext.getRegistry().containsBeanDefinition(txAspectBeanName)) {
 			RootBeanDefinition def = new RootBeanDefinition();
@@ -84,15 +85,13 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 	}
 
 	private static void registerTransactionManager(Element element, BeanDefinition def) {
-		def.getPropertyValues().add("transactionManagerBeanName",
-				TxNamespaceHandler.getTransactionManagerName(element));
+		def.getPropertyValues().add("transactionManagerBeanName", TxNamespaceHandler.getTransactionManagerName(element));
 	}
 
 	private void registerTransactionalEventListenerFactory(ParserContext parserContext) {
 		RootBeanDefinition def = new RootBeanDefinition();
 		def.setBeanClass(TransactionalEventListenerFactory.class);
-		parserContext.registerBeanComponent(new BeanComponentDefinition(def,
-				TransactionManagementConfigUtils.TRANSACTIONAL_EVENT_LISTENER_FACTORY_BEAN_NAME));
+		parserContext.registerBeanComponent(new BeanComponentDefinition(def, TransactionManagementConfigUtils.TRANSACTIONAL_EVENT_LISTENER_FACTORY_BEAN_NAME));
 	}
 
 

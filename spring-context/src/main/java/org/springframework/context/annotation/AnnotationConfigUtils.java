@@ -270,8 +270,7 @@ public class AnnotationConfigUtils {
 		}
 	}
 
-	static BeanDefinitionHolder applyScopedProxyMode(
-			ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
+	static BeanDefinitionHolder applyScopedProxyMode(ScopeMetadata metadata, BeanDefinitionHolder definition, BeanDefinitionRegistry registry) {
 
 		ScopedProxyMode scopedProxyMode = metadata.getScopedProxyMode();
 		if (scopedProxyMode.equals(ScopedProxyMode.NO)) {
