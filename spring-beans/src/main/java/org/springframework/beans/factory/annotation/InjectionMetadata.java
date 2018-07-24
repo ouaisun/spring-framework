@@ -172,8 +172,11 @@ public class InjectionMetadata {
 				throws Throwable {
 
 			if (this.isField) {
+				// 属性字段
 				Field field = (Field) this.member;
+				// 使字段可访问
 				ReflectionUtils.makeAccessible(field);
+				// 设置字段的值
 				field.set(target, getResourceToInject(target, requestingBeanName));
 			}
 			else {

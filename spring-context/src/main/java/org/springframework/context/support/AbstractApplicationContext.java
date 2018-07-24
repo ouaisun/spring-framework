@@ -673,12 +673,30 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
+		// 设置beanFactory的ClassLoader为当前的ClassLoader
 		beanFactory.setBeanClassLoader(getClassLoader());
+		// 设置表达式解析器(解析bean定义中的一些表达式)
 		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
+		// 添加属性编辑注册器(注册属性编辑器)，属性编辑器实际上是属性的类型转换器，
+		// 因为bean的属性配置都是字符串类型的 实例化的时候要将这些属性转换为实际类型
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
-
+		// 添加BeanPostProcessor(Bean后置处理器)：ApplicationContextAwareProcessor
+		// 在BEAN初始化之前，调用ApplicationContextAwareProcessor的postProcessBeforeInitialization
+		// 处理所有的Aware接口，进行如下操作：
+		// 如果bean实现了EnvironmentAware接口，调用bean.setEnvironment
+		// 如果bean实现了EmbeddedValueResolverAware接口，调用bean.setEmbeddedValueResolver
+		// 如果bean实现了ResourceLoaderAware接口，调用bean.setResourceLoader
+		// 如果bean实现了ApplicationEventPublisherAware接口，调用bean.setApplicationEventPublisher
+		// 如果bean实现了MessageSourceAware接口，调用bean.setMessageSource
+		// 如果bean实现了ApplicationContextAware接口，调用bean.setApplicationContext
 		// Configure the bean factory with context callbacks.
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		// 取消ResourceLoaderAware
+		// 、ApplicationEventPublisherAware
+		// 、MessageSourceAware
+		// 、ApplicationContextAware
+		// 、EnvironmentAware这5个接口的自动注入
+		// 因为ApplicationContextAwareProcessor把这5个接口的实现工作做了
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -688,22 +706,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean.
+		// 设置几个自动装配的特殊规则
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
-
+		// 添加BeanPostProcessor(后置处理器)：ApplicationListenerDetector
+		// 在Bean初始化后检查是否实现了ApplicationListener接口,
+		// 是则加入当前的applicationContext的applicationListeners列表
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
+		// 检查容器中是否包含名称为loadTimeWeaver的bean，实际上是增加Aspectj的支持
+		// AspectJ采用编译期织入、类加载期织入两种方式进行切面的织入
+		// 类加载期织入简称为LTW（Load Time Weaving）,通过特殊的类加载器来代理JVM默认的类加载器实现
 		if (beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
+			// 添加BEAN后置处理器：LoadTimeWeaverAwareProcessor
+			// 在BEAN初始化之前检查BEAN是否实现了LoadTimeWeaverAware接口，
+			// 如果是，则进行加载时织入，即静态代理。
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			// Set a temporary ClassLoader for type matching.
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
 		}
 
 		// Register default environment beans.
+		// 注入一些其它信息的bean，比如environment、systemProperties等
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
@@ -732,10 +760,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * <p>Must be called before singleton instantiation.
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		// 调用BeanFactoryPostProcessors
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
-
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
 		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
+		// 再次检查使用存在LoadTimeWeaverBean,如果进行LWT的处理
 		if (beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
@@ -792,12 +821,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 */
 	protected void initApplicationEventMulticaster() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 如果有用户自定义的事件广播器（名称为：applicationEventMulticaster的bean）
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
 			this.applicationEventMulticaster =
 					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
+			// 如果有用户没有自定义的事件广播器（名称为：applicationEventMulticaster的bean），
+			// 使用系统默认的SimpleApplicationEventMulticaster
 		} else {
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
@@ -854,18 +886,21 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 */
 	protected void registerListeners() {
 		// Register statically specified listeners first.
+		// 直接添加到容器中的事件监听器
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
 			getApplicationEventMulticaster().addApplicationListener(listener);
 		}
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let post-processors apply to them!
+		// 从beanFactory中获取所有实现了ApplicationListener接口的事件监听器
 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
 		for (String listenerBeanName : listenerBeanNames) {
 			getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
 		}
 
 		// Publish early application events now that we finally have a multicaster...
+		// 如果存在earlyApplicationEvents，直接广播出去
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
 		if (earlyEventsToProcess != null) {
