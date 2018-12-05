@@ -63,6 +63,7 @@ public abstract class AbstractAdvisingBeanPostProcessor extends ProxyProcessorSu
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
+	
 		if (bean instanceof AopInfrastructureBean || this.advisor == null) {
 			// Ignore AOP infrastructure such as scoped proxies.
 			return bean;
