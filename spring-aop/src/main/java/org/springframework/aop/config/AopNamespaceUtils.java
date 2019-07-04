@@ -54,26 +54,21 @@ public abstract class AopNamespaceUtils {
 
 	public static void registerAutoProxyCreatorIfNecessary(ParserContext parserContext, Element sourceElement) {
 
-		BeanDefinition beanDefinition = AopConfigUtils.registerAutoProxyCreatorIfNecessary(parserContext.getRegistry(),
-				parserContext.extractSource(sourceElement));
+		BeanDefinition beanDefinition = AopConfigUtils.registerAutoProxyCreatorIfNecessary(parserContext.getRegistry(), parserContext.extractSource(sourceElement));
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
-	public static void registerAspectJAutoProxyCreatorIfNecessary(
-			ParserContext parserContext, Element sourceElement) {
+	public static void registerAspectJAutoProxyCreatorIfNecessary(ParserContext parserContext, Element sourceElement) {
 
-		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAutoProxyCreatorIfNecessary(
-				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAutoProxyCreatorIfNecessary(parserContext.getRegistry(), parserContext.extractSource(sourceElement));
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
-	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(
-			ParserContext parserContext, Element sourceElement) {
+	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(ParserContext parserContext, Element sourceElement) {
 
-		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(
-				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext.getRegistry(), parserContext.extractSource(sourceElement));
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
@@ -95,8 +90,7 @@ public abstract class AopNamespaceUtils {
 
 	private static void registerComponentIfNecessary(@Nullable BeanDefinition beanDefinition, ParserContext parserContext) {
 		if (beanDefinition != null) {
-			BeanComponentDefinition componentDefinition = new BeanComponentDefinition(beanDefinition,
-					AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME);
+			BeanComponentDefinition componentDefinition = new BeanComponentDefinition(beanDefinition, AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME);
 			parserContext.registerComponent(componentDefinition);
 		}
 	}

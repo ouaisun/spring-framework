@@ -86,8 +86,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 13.10.2003
  */
 @SuppressWarnings("serial")
-public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
-		implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
+public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
 
 	/**
 	 * Convenience constant for subclasses: Return value for "do not proxy".
@@ -280,8 +279,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	}
 
 	@Override
-	public PropertyValues postProcessPropertyValues(
-			PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) {
+	public PropertyValues postProcessPropertyValues(PropertyValues pvs, PropertyDescriptor[] pds, Object bean, String beanName) {
 
 		return pvs;
 	}
@@ -325,8 +323,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 */
 	protected Object getCacheKey(Class<?> beanClass, @Nullable String beanName) {
 		if (StringUtils.hasLength(beanName)) {
-			return (FactoryBean.class.isAssignableFrom(beanClass) ?
-					BeanFactory.FACTORY_BEAN_PREFIX + beanName : beanName);
+			return (FactoryBean.class.isAssignableFrom(beanClass) ? BeanFactory.FACTORY_BEAN_PREFIX + beanName : beanName);
 		} else {
 			return beanClass;
 		}
@@ -555,7 +552,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			}
 		}
 		if (logger.isDebugEnabled()) {
-			int nrOfCommonInterceptors   = commonInterceptors.length;
+			int nrOfCommonInterceptors = commonInterceptors.length;
 			int nrOfSpecificInterceptors = (specificInterceptors != null ? specificInterceptors.length : 0);
 			logger.debug("Creating implicit proxy for bean '" + beanName + "' with " + nrOfCommonInterceptors +
 					" common interceptors and " + nrOfSpecificInterceptors + " specific interceptors");
@@ -574,9 +571,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @see #setInterceptorNames
 	 */
 	private Advisor[] resolveInterceptorNames() {
-		BeanFactory             bf       = this.beanFactory;
-		ConfigurableBeanFactory cbf      = (bf instanceof ConfigurableBeanFactory ? (ConfigurableBeanFactory) bf : null);
-		List<Advisor>           advisors = new ArrayList<>();
+		BeanFactory bf = this.beanFactory;
+		ConfigurableBeanFactory cbf = (bf instanceof ConfigurableBeanFactory ? (ConfigurableBeanFactory) bf : null);
+		List<Advisor> advisors = new ArrayList<>();
 		for (String beanName : this.interceptorNames) {
 			if (cbf == null || !cbf.isCurrentlyInCreation(beanName)) {
 				Assert.state(bf != null, "BeanFactory required for resolving interceptor names");

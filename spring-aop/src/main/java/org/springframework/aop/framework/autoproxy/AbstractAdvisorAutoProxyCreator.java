@@ -92,7 +92,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 */
 	protected List<Advisor> findEligibleAdvisors(Class<?> beanClass, String beanName) {
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
-		List<Advisor> eligibleAdvisors  = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
+		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
@@ -122,8 +122,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 *
 	 * @see ProxyCreationContext#getCurrentProxiedBeanName()
 	 */
-	protected List<Advisor> findAdvisorsThatCanApply(
-			List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
+	protected List<Advisor> findAdvisorsThatCanApply(List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {

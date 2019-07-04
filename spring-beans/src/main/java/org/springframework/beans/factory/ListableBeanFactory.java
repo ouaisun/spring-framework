@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
 import org.springframework.beans.BeansException;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * Extension of the {@link BeanFactory} interface to be implemented by bean factories
@@ -262,7 +262,7 @@ public interface ListableBeanFactory extends BeanFactory {
 	 */
 	Map<String, Object> getBeansWithAnnotation(Class<? extends Annotation> annotationType) throws BeansException;
 
-	/**
+	/**HierarchicalBeanFactory
 	 * Find an {@link Annotation} of {@code annotationType} on the specified
 	 * bean, traversing its interfaces and super classes if no annotation can be
 	 * found on the given class itself.

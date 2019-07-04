@@ -51,7 +51,7 @@ public class ConstructorArgumentValues {
 	/**
 	 * Create a new empty ConstructorArgumentValues object.
 	 */
-	public ConstructorArgumentValues() {
+	public ConstructorArgumentValues() {BeanWrapper
 	}
 
 	/**
