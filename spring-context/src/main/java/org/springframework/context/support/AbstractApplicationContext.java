@@ -506,7 +506,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * Return the list of BeanFactoryPostProcessors that will get applied
 	 * to the internal BeanFactory.
 	 */
-	public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors() {
+	public List<BeanFactoryPostProcessor> getBeanFactoryPostProcessors()AnnotationConfigUtils {
 		return this.beanFactoryPostProcessors;
 	}
 
@@ -532,7 +532,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
-			// 准备工作，设置ApplicationContext中的一些标志位，如closed设为false，active设为true。校验添加了required标志的属性，
+			// 准备工作，设置ApplicationContext中的一些状态，如closed设为false，active设为true。校验添加了required标志的属性，
 			// 如果他们为空，则抛出MissingRequiredPropertiesException异常。此处比较简单，可自行分析
 			prepareRefresh();
 
@@ -550,7 +550,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				// Allows post-processing of the bean factory in context subclasses.
 				// 调用默认的容器后处理器，如ServletContextAwareProcessor
 				postProcessBeanFactory(beanFactory);
-
 				// Invoke factory processors registered as beans in the context.
 				// 初始化并调用所有注册的容器后处理器BeanFactoryPostProcessor，此处比较麻烦，但不算关键，可自行分析
 				invokeBeanFactoryPostProcessors(beanFactory);
@@ -567,7 +566,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 				// Initialize event multicaster for this context.
 				// 初始化ApplicationEventMulticaster，用来进行事件广播。如果有beanName为"applicationEventMulticaster"，
 				// 则初始化它。否则使用默认的SimpleApplicationEventMulticaster。广播事件会发送给所有监听器，也就是实现了ApplicationListener的类。
-				// 关于spring事件体系，可以参见 http://blog.csdn.net/caihaijiang/article/details/7460888
+				// 关于spring事件体系，可以参见 http://blog.ApplicationContextAwareProcessorcsdn.net/caihaijiang/article/details/7460888
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
@@ -613,28 +612,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
 	 */
-	protected void prepareRefresh() {
-		this.startupDate = System.currentTimeMillis();
-		this.closed.set(false);
-		this.active.set(true);
+protected void prepareRefresh() {
+	this.startupDate = System.currentTimeMillis();
+	this.closed.set(false);
+	this.active.set(true);
 
-		if (logger.isInfoEnabled()) {
-			logger.info("Refreshing " + this);
-		}
-
-		// Initialize any placeholder property sources in the context environment
-		//留给子类覆写，实现其特有的占位符初始化操作，这里方法体为空
-		initPropertySources();
-
-		// Validate that all properties marked as required are resolvable
-		// see ConfigurablePropertyResolver#setRequiredProperties
-		//验证系统所必须的关键性配置参数是否已经加载到environment中，如果没有则抛出MissingRequiredPropertiesException异常
-		getEnvironment().validateRequiredProperties();
-
-		// Allow for the collection of early ApplicationEvents,
-		// to be published once the multicaster is available...
-		this.earlyApplicationEvents = new LinkedHashSet<>();
+	if (logger.isInfoEnabled()) {
+		logger.info("Refreshing " + this);
 	}
+
+	// Initialize any placeholder property sources in the context environment
+	//留给子类覆写，实现其特有的占位符初始化操作，这里方法体为空
+	initPropertySources();
+
+	// Validate that all properties marked as required are resolvable
+	// see ConfigurablePropertyResolver#setRequiredProperties
+	//验证系统所必须的关键性配置参数是否已经加载到environment中，如果没有则抛出MissingRequiredPropertiesException异常
+	getEnvironment().validateRequiredProperties();
+
+	// Allow for the collection of early ApplicationEvents,
+	// to be published once the multicaster is available...
+	this.earlyApplicationEvents = new LinkedHashSet<>();
+}
 
 	/**
 	 * <p>Replace any stub property sources with actual instances.
@@ -765,7 +764,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
 		// (e.g. through an @Bean method registered by ConfigurationClassPostProcessor)
-		// 再次检查使用存在LoadTimeWeaverBean,如果进行LWT的处理
+
+		// 再次检查使用存在LoadTimeWeaverBean,设置编织处理类LoadTimeWeaverAwareProcessor,
 		if (beanFactory.getTempClassLoader() == null && beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));

@@ -65,7 +65,7 @@ public interface ConfigurablePropertyAccessor extends PropertyAccessor, Property
 	 * {@link NullValueInNestedPathException}.
 	 * <p>Default is {@code false} on a plain PropertyAccessor instance.
 	 */
-	void setAutoGrowNestedPaths(boolean autoGrowNestedPaths);
+	void setAutoGrowNestedPaths(boolean autoGrowNestedPaths);BeanWrapperImpl
 
 	/**
 	 * Return whether "auto-growing" of nested paths has been activated.
