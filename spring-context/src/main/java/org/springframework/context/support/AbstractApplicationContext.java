@@ -655,7 +655,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		//这里使用了委派设计模式，父类定义了抽象的refreshBeanFactory()方法，具体实现调用子类容器的refreshBeanFactory()方法
-		//刷新beanFactory
+		// 刷新beanFactory
+		// AbstractAutowireCapableBeanFactory中实现，并创建beanFactory
 		refreshBeanFactory();
 		//获取beanFactory并进行返回
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();

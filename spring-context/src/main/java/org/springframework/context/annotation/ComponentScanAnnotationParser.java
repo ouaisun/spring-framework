@@ -16,14 +16,6 @@
 
 package org.springframework.context.annotation;
 
-import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -42,15 +34,23 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 /**
  * Parser for the @{@link ComponentScan} annotation.
  *
  * @author Chris Beams
  * @author Juergen Hoeller
  * @author Sam Brannen
- * @since 3.1
  * @see ClassPathBeanDefinitionScanner#scan(String...)
  * @see ComponentScanBeanDefinitionParser
+ * @since 3.1
  */
 class ComponentScanAnnotationParser {
 
@@ -64,7 +64,7 @@ class ComponentScanAnnotationParser {
 
 
 	public ComponentScanAnnotationParser(Environment environment, ResourceLoader resourceLoader,
-			BeanNameGenerator beanNameGenerator, BeanDefinitionRegistry registry) {
+										 BeanNameGenerator beanNameGenerator, BeanDefinitionRegistry registry) {
 
 		this.environment = environment;
 		this.resourceLoader = resourceLoader;
@@ -78,15 +78,15 @@ class ComponentScanAnnotationParser {
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
+
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
-		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator :
-				BeanUtils.instantiateClass(generatorClass));
+
+		scanner.setBeanNameGenerator(useInheritedGenerator ? this.beanNameGenerator : BeanUtils.instantiateClass(generatorClass));
 
 		ScopedProxyMode scopedProxyMode = componentScan.getEnum("scopedProxy");
 		if (scopedProxyMode != ScopedProxyMode.DEFAULT) {
 			scanner.setScopedProxyMode(scopedProxyMode);
-		}
-		else {
+		} else {
 			Class<? extends ScopeMetadataResolver> resolverClass = componentScan.getClass("scopeResolver");
 			scanner.setScopeMetadataResolver(BeanUtils.instantiateClass(resolverClass));
 		}
@@ -109,8 +109,8 @@ class ComponentScanAnnotationParser {
 			scanner.getBeanDefinitionDefaults().setLazyInit(true);
 		}
 
-		Set<String> basePackages = new LinkedHashSet<>();
-		String[] basePackagesArray = componentScan.getStringArray("basePackages");
+		Set<String> basePackages      = new LinkedHashSet<>();
+		String[]    basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
 			String[] tokenized = StringUtils.tokenizeToStringArray(this.environment.resolvePlaceholders(pkg),
 					ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS);
@@ -134,7 +134,7 @@ class ComponentScanAnnotationParser {
 
 	private List<TypeFilter> typeFiltersFor(AnnotationAttributes filterAttributes) {
 		List<TypeFilter> typeFilters = new ArrayList<>();
-		FilterType filterType = filterAttributes.getEnum("type");
+		FilterType       filterType  = filterAttributes.getEnum("type");
 
 		for (Class<?> filterClass : filterAttributes.getClassArray("classes")) {
 			switch (filterType) {

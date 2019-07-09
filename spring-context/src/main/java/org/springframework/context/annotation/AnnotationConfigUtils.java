@@ -290,15 +290,13 @@ public class AnnotationConfigUtils {
 		return AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(annotationClassName, false));
 	}
 
-	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata,
-															 Class<?> containerClass, Class<?> annotationClass) {
+	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata, Class<?> containerClass, Class<?> annotationClass) {
 
 		return attributesForRepeatable(metadata, containerClass.getName(), annotationClass.getName());
 	}
 
 	@SuppressWarnings("unchecked")
-	static Set<AnnotationAttributes> attributesForRepeatable(
-			AnnotationMetadata metadata, String containerClassName, String annotationClassName) {
+	static Set<AnnotationAttributes> attributesForRepeatable(AnnotationMetadata metadata, String containerClassName, String annotationClassName) {
 
 		Set<AnnotationAttributes> result = new LinkedHashSet<>();
 

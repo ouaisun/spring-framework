@@ -37,8 +37,7 @@ import org.springframework.lang.Nullable;
  * @see AutoProxyUtils#determineTargetClass
  */
 @SuppressWarnings("serial")
-public abstract class AbstractBeanFactoryAwareAdvisingPostProcessor extends AbstractAdvisingBeanPostProcessor
-		implements BeanFactoryAware {
+public abstract class AbstractBeanFactoryAwareAdvisingPostProcessor extends AbstractAdvisingBeanPostProcessor implements BeanFactoryAware {
 
 	@Nullable
 	private ConfigurableListableBeanFactory beanFactory;

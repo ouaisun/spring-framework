@@ -274,8 +274,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				String nameToLookup = originalBeanName(name);
 
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
-					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(
-							nameToLookup, requiredType, args, typeCheckOnly);
+					return ((AbstractBeanFactory) parentBeanFactory).doGetBean(nameToLookup, requiredType, args, typeCheckOnly);
 				}
 				else if (args != null) {
 					// Delegation to parent with explicit args.
@@ -362,8 +361,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							beforePrototypeCreation(beanName);
 							try {
 								return createBean(beanName, mbd, args);
-							}
-							finally {
+							}finally {
 								afterPrototypeCreation(beanName);
 							}
 						});

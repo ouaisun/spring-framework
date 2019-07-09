@@ -275,8 +275,7 @@ class PostProcessorRegistrationDelegate {
 	/**
 	 * Invoke the given BeanFactoryPostProcessor beans.
 	 */
-	private static void invokeBeanFactoryPostProcessors(
-			Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
+	private static void invokeBeanFactoryPostProcessors(Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
 		//实现类,一般先处理配置相关的类ConfigurationClassPostProcessor
 		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
 			postProcessor.postProcessBeanFactory(beanFactory);
