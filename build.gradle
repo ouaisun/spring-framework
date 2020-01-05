@@ -1,5 +1,14 @@
 buildscript {
     repositories {
+
+        maven { url "http://maven.aliyun.com/nexus/content/groups/public" }
+        maven {
+            url "https://maven.springframework.org/release"
+        }
+        maven {
+            url "https://maven.restlet.com"
+        }
+        maven { url "https://repo.spring.io/snapshot" }  // for Reactor
         maven { url "https://repo.spring.io/plugins-release" }
     }
     dependencies {
@@ -12,17 +21,17 @@ buildscript {
 
 // 3rd party plugin repositories can be configured in settings.gradle
 plugins {
-    id "com.gradle.build-scan" version "1.8"
+    id "com.gradle.build-scan" version "2.3"
     id "io.spring.dependency-management" version "1.0.3.RELEASE" apply false
     id "org.jetbrains.kotlin.jvm" version "1.2.31" apply false
     id "org.jetbrains.dokka" version "0.9.16"
     id "org.asciidoctor.convert" version "1.5.6"
 }
 
-buildScan {
-    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-    licenseAgree = 'yes'
-}
+//buildScan {
+//    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+//    licenseAgree = 'yes'
+//}
 
 ext {
     linkHomepage = 'https://projects.spring.io/spring-framework'
@@ -63,6 +72,7 @@ configure(allprojects) { project ->
     ext.undertowVersion = "2.0.4.Final"
 
     ext.gradleScriptDir = "${rootProject.projectDir}/gradle"
+
 
     apply plugin: "propdeps"
     apply plugin: "java"
@@ -140,6 +150,7 @@ configure(allprojects) { project ->
     repositories {
         maven { url "https://repo.spring.io/libs-release" }
         maven { url "https://repo.spring.io/snapshot" }  // for Reactor
+        maven { url "http://repo.springsource.org/plugins-release" }
     }
 
     dependencies {
@@ -201,21 +212,21 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
         }
     }
 
-    javadoc {
-        description = "Generates project-level javadoc for use in -javadoc jar"
-
-        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
-        options.author = true
-        options.header = project.name
-        options.use = true
-        options.links(project.ext.javadocLinks)
-        options.addStringOption('Xdoclint:none', '-quiet')
-
-        // Suppress warnings due to cross-module @see and @link references.
-        // Note that global 'api' task does display all warnings.
-        logging.captureStandardError LogLevel.INFO
-        logging.captureStandardOutput LogLevel.INFO  // suppress "## warnings" message
-    }
+//    javadoc {
+//        description = "Generates project-level javadoc for use in -javadoc jar"
+//
+//        options.memberLevel = org.gradle.external.javadoc.JavadocMemberLevel.PROTECTED
+//        options.author = true
+//        options.header = project.name
+//        options.use = true
+//        options.links(project.ext.javadocLinks)
+//        options.addStringOption('Xdoclint:none', '-quiet')
+//
+//        // Suppress warnings due to cross-module @see and @link references.
+//        // Note that global 'api' task does display all warnings.
+//        logging.captureStandardError LogLevel.INFO
+//        logging.captureStandardOutput LogLevel.INFO  // suppress "## warnings" message
+//    }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
@@ -224,14 +235,14 @@ configure(subprojects - project(":spring-build-src")) { subproject ->
         // Don't include or exclude anything explicitly by default. See SPR-12085.
     }
 
-    task javadocJar(type: Jar) {
-        classifier = "javadoc"
-        from javadoc
-    }
+//    task javadocJar(type: Jar) {
+//        classifier = "javadoc"
+//        from javadoc
+//    }
 
     artifacts {
         archives sourcesJar
-        archives javadocJar
+        //archives javadocJar
     }
 }
 
@@ -281,21 +292,21 @@ configure(rootProject) {
         //archives distZip
     }
 
-    task wrapper(type: Wrapper) {
-        description = "Generates gradlew[.bat] scripts"
-        gradleVersion = '4.6'
-
-        doLast() {
-            def gradleOpts = "-XX:MaxMetaspaceSize=1024m -Xmx1024m"
-            def gradleBatOpts = "$gradleOpts -XX:MaxHeapSize=256m"
-            File wrapperFile = file("gradlew")
-            wrapperFile.text = wrapperFile.text.replace("DEFAULT_JVM_OPTS=",
-                    "GRADLE_OPTS=\"$gradleOpts \$GRADLE_OPTS\"\nDEFAULT_JVM_OPTS=")
-            File wrapperBatFile = file("gradlew.bat")
-            wrapperBatFile.text = wrapperBatFile.text.replace("set DEFAULT_JVM_OPTS=",
-                    "set GRADLE_OPTS=$gradleBatOpts %GRADLE_OPTS%\nset DEFAULT_JVM_OPTS=")
-        }
-    }
+//    task wrapper(type: Wrapper) {
+//        description = "Generates gradlew[.bat] scripts"
+//        gradleVersion = '5.5.1'
+//
+//        doLast() {
+//            def gradleOpts = "-XX:MaxMetaspaceSize=1024m -Xmx1024m"
+//            def gradleBatOpts = "$gradleOpts -XX:MaxHeapSize=256m"
+//            File wrapperFile = file("gradlew")
+//            wrapperFile.text = wrapperFile.text.replace("DEFAULT_JVM_OPTS=",
+//                    "GRADLE_OPTS=\"$gradleOpts \$GRADLE_OPTS\"\nDEFAULT_JVM_OPTS=")
+//            File wrapperBatFile = file("gradlew.bat")
+//            wrapperBatFile.text = wrapperBatFile.text.replace("set DEFAULT_JVM_OPTS=",
+//                    "set GRADLE_OPTS=$gradleBatOpts %GRADLE_OPTS%\nset DEFAULT_JVM_OPTS=")
+//        }
+//    }
 
 }
 
